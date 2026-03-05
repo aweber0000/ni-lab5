@@ -1,0 +1,10 @@
+[
+    {
+        "amount_pln": 760.00,
+        "date_due": "2025-02-01",
+        "settlement_year": 2025,
+        "settlement_month": 1,
+        "apartment": "apart-polanka",
+        "type": "rent"
+    }
+]
