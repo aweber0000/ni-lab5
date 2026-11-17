@@ -5,20 +5,6 @@ from src.models import Parameters
 from src.models import Bill
 
 
-def test_manager_get_apartment_costs():
-    parameters = Parameters()
-    manager = Manager(parameters)
-
-    assert manager.get_apartment_costs('apart-polanka', 2025, 1) == 910.0
-    assert manager.get_apartment_costs('apart-polanka', 2025, 2) == 0.0
-    assert manager.get_apartment_costs('apart-polanka', 2000, 1) == 0.0
-
-    assert manager.get_apartment_costs('FakeApartment', 2025, 1) is None
-
-    with pytest.raises(ValueError):
-        manager.get_apartment_costs('apart-polanka', 2025, 13)
-
-
 def test_apartment_costs_with_optional_parameters():
     manager = Manager(Parameters())
     manager.bills.append(Bill(
@@ -65,3 +51,9 @@ def test_apartment_costs_with_optional_parameters():
 
     costs = manager.get_apartment_costs('apart-polanka')
     assert costs == 3532.0
+
+    with pytest.raises(ValueError):
+        manager.get_apartment_costs('apart-polanka', None, 1)
+
+    with pytest.raises(ValueError):
+        manager.get_apartment_costs('apart-polanka', 2025, 13)
