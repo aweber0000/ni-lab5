@@ -1,4 +1,4 @@
-from src.models import Apartment, Bill, Parameters, Tenant, Transfer
+from src.models import Apartment, ApartmentSettlement, Bill, Parameters, Tenant, Transfer
 
 
 class Manager:
@@ -47,3 +47,39 @@ class Manager:
             out += bill.amount_pln
 
         return out
+
+    def get_apartment_settlement(self, apartment_key: str, year: int, month: int) -> ApartmentSettlement | None:
+        if apartment_key not in self.apartments:
+            return None
+
+        # Przyjmujemy, że:
+        # total_rent_pln = łącznie ile zarobiliśmy z transferów od lokatorów, czyli suma "amount" z "transfers"
+        total_rent_pln: float = 0.0
+        # total_bills_pln = łącznie ile musieliśmy zapłacić, czyli suma "amount" z "bills"
+        total_bills_pln: float = 0.0
+
+        if month < 0 or month > 12:
+            raise ValueError("Nieprawidłowy numer miesiąca")
+
+        for bill in self.bills:
+            if bill.settlement_year != year or bill.settlement_month != month:
+                continue
+
+            total_bills_pln += bill.amount_pln
+
+        for transfer in self.transfers:
+            if transfer.settlement_year != year or transfer.settlement_month != month:
+                continue
+
+            total_rent_pln += transfer.amount_pln
+
+        total_due_pln = total_bills_pln - total_rent_pln
+
+        return ApartmentSettlement(
+            apartment=apartment_key,
+            year=year,
+            month=month,
+            total_rent_pln=total_rent_pln,
+            total_bills_pln=total_bills_pln,
+            total_due_pln=total_due_pln,
+        )
