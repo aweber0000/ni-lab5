@@ -24,23 +24,26 @@ class Manager:
                 return False
         return True
 
-    def get_apartment_costs(self, apartment_key: str, year: int, month: int) -> float:
+    def get_apartment_costs(self, apartment_key: str, year: int | None = None, month: int | None = None) -> float | None:
         out = 0.0
 
         if apartment_key not in self.apartments:
-            raise ValueError("Nieznane mieszkanie")
+            return None
 
-        if month < 0 or month > 12:
+        if year is None and month is not None:
+            raise ValueError("Przy podaniu roku należy podać miesiąc")
+
+        if month is not None and (month < 0 or month > 12):
             raise ValueError("Nieprawidłowy numer miesiąca")
 
-        for bill in filter(
-            lambda b: (
-                b.apartment == apartment_key
-                and b.settlement_year == year
-                and b.settlement_month == month
-            ),
-            self.bills,
-        ):
+        for bill in self.bills:
+            if bill.apartment != apartment_key:
+                continue
+            if year is not None and bill.settlement_year != year:
+                continue
+            if month is not None and bill.settlement_month != month:
+                continue
+
             out += bill.amount_pln
 
         return out
