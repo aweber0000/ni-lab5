@@ -30,3 +30,33 @@ def test_apartment_balance():
 
     with pytest.raises(ValueError):
         manager.get_apartment_settlement("apart-polanka", 2025, 13)
+
+
+def test_tenant_balance():
+    manager = Manager(Parameters())
+
+    assert manager.create_tenant_settlements("fake-apartment", 2025, 1) == []
+
+    settlements = manager.create_tenant_settlements("apart-polanka", 2025, 1)
+    settlement = settlements[0]
+
+    assert settlement is not None
+    assert settlement.tenant == "tenant-1"
+    assert settlement.year == 2025
+    assert settlement.month == 1
+    assert settlement.bills_pln == 910 / 3
+    assert settlement.rent_pln == 1500.0
+
+    settlement = manager.create_tenant_settlements("apart-polanka", 2023, 1)
+    settlement = settlements[0]
+
+    assert settlement is not None
+    assert settlement.tenant == "tenant-1"
+    assert settlement.year == 2025
+    assert settlement.month == 1
+    assert settlement.bills_pln == 910 / 3
+    assert settlement.rent_pln == 1500.0
+
+    with pytest.raises(ValueError):
+        manager.create_tenant_settlements("apart-polanka", 2025, 13)
+
